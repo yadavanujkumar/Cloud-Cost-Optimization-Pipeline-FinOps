@@ -41,7 +41,7 @@ def generate_cur_data(num_rows: int = 1000, output_file: str = "simulated_cur_re
     for service_name, _, _, prefix in services:
         num_resources = np.random.randint(5, 15)
         resource_pool[service_name] = [
-            f"{prefix}{np.random.randint(10000, 99999):05x}" 
+            f"{prefix}{np.random.randint(0x10000, 0xFFFFF):05x}" 
             for _ in range(num_resources)
         ]
     

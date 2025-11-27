@@ -77,13 +77,17 @@ def forecast_monthly_cost(df: pd.DataFrame) -> dict:
     # Calculate trend line for visualization
     daily_costs["Trend"] = slope * daily_costs["Day_Number"] + intercept
     
+    # Flag if the forecast is unrealistic (negative projection)
+    is_unrealistic = projected_monthly < 0
+    
     return {
         "daily_costs": daily_costs,
         "slope": slope,
         "intercept": intercept,
-        "projected_monthly": max(0, projected_monthly),  # Ensure non-negative
+        "projected_monthly": max(0, projected_monthly),
         "current_total": df["Unblended_Cost"].sum(),
-        "avg_daily_cost": y.mean()
+        "avg_daily_cost": y.mean(),
+        "is_unrealistic_forecast": is_unrealistic
     }
 
 
@@ -225,6 +229,11 @@ def main():
         
         trend_direction = "📈 Increasing" if forecast["slope"] > 0 else "📉 Decreasing"
         st.info(f"**Trend**: {trend_direction}\n\nDaily change: ${abs(forecast['slope']):.2f}")
+        
+        if forecast.get("is_unrealistic_forecast"):
+            st.warning("⚠️ The linear model produced an unrealistic negative projection. "
+                      "The displayed value has been adjusted to $0. Consider using a "
+                      "more sophisticated forecasting model for better accuracy.")
     
     st.divider()
     
